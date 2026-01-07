@@ -98,8 +98,11 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground antialiased font-rajdhani;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-orbitron;
   }
 }
 
