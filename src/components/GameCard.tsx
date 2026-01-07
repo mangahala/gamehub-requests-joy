@@ -1,22 +1,15 @@
-import { Download, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Download, Star, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Game } from '@/hooks/useGames';
-import { useIncrementDownload } from '@/hooks/useGames';
 
 interface GameCardProps {
   game: Game;
 }
 
 export function GameCard({ game }: GameCardProps) {
-  const incrementDownload = useIncrementDownload();
-
-  const handleDownload = async () => {
-    await incrementDownload.mutateAsync(game.id);
-    window.open(game.download_link, '_blank');
-  };
-
   return (
     <Card className="group overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
       <div className="relative aspect-video overflow-hidden">
@@ -46,18 +39,16 @@ export function GameCard({ game }: GameCardProps) {
           {game.description || 'No description available'}
         </p>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            {game.download_count || 0} downloads
-          </span>
-          <Button
-            size="sm"
-            onClick={handleDownload}
-            disabled={incrementDownload.isPending}
-            className="gap-2 neon-glow"
-          >
-            <Download className="w-4 h-4" />
-            Download
-          </Button>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Download className="w-3 h-3" />
+            <span>{game.download_count || 0}</span>
+          </div>
+          <Link to={`/game/${game.id}`}>
+            <Button size="sm" className="gap-2 neon-glow">
+              <Eye className="w-4 h-4" />
+              View
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
