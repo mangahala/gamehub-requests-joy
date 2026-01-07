@@ -12,9 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useCreateGame, useUpdateGame, type Game } from '@/hooks/useGames';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { ScreenshotManager } from './ScreenshotManager';
 
 const gameSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -274,6 +276,14 @@ export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps
               onCheckedChange={setIsFeatured}
             />
           </div>
+
+          {/* Screenshot Gallery - Only show when editing */}
+          {isEditing && game && (
+            <>
+              <Separator className="my-4" />
+              <ScreenshotManager gameId={game.id} />
+            </>
+          )}
 
           <div className="flex gap-3 pt-4">
             <Button

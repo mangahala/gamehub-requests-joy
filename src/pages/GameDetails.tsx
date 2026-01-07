@@ -5,9 +5,11 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ScreenshotCarousel } from '@/components/ScreenshotCarousel';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useIncrementDownload } from '@/hooks/useGames';
+import { useGameScreenshots } from '@/hooks/useGameScreenshots';
 import type { Game } from '@/hooks/useGames';
 
 export default function GameDetails() {
@@ -28,6 +30,8 @@ export default function GameDetails() {
     },
     enabled: !!id,
   });
+
+  const { data: screenshots = [] } = useGameScreenshots(id);
 
   const handleDownload = async () => {
     if (!game || downloadState !== 'idle') return;
@@ -96,28 +100,25 @@ export default function GameDetails() {
         {/* Game Hero */}
         <section className="container pb-12">
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Screenshot */}
-            <div className="relative group">
-              <div className="relative aspect-video overflow-hidden rounded-xl border border-border/50 bg-card">
-                <img
-                  src={game.imgbb_image_url || '/placeholder.svg'}
-                  alt={game.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-                
-                {/* Badges */}
-                <div className="absolute top-4 left-4 flex gap-2">
-                  {game.is_featured && (
-                    <Badge className="bg-warning text-warning-foreground">
-                      <Star className="w-3 h-3 mr-1" />
-                      Featured
-                    </Badge>
-                  )}
-                  {game.category && (
-                    <Badge variant="secondary">{game.category}</Badge>
-                  )}
-                </div>
+            {/* Screenshot Carousel */}
+            <div className="relative">
+              <ScreenshotCarousel 
+                mainImage={game.imgbb_image_url} 
+                screenshots={screenshots} 
+                title={game.title} 
+              />
+              
+              {/* Badges */}
+              <div className="absolute top-4 left-4 flex gap-2 z-10">
+                {game.is_featured && (
+                  <Badge className="bg-warning text-warning-foreground font-rajdhani">
+                    <Star className="w-3 h-3 mr-1" />
+                    Featured
+                  </Badge>
+                )}
+                {game.category && (
+                  <Badge variant="secondary" className="font-rajdhani">{game.category}</Badge>
+                )}
               </div>
             </div>
 
