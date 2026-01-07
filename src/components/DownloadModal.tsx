@@ -58,10 +58,16 @@ export function DownloadModal({ game, onClose }: DownloadModalProps) {
     toast.success('Link copied! Share it to earn money!');
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open && phase === 'complete') {
+      onClose();
+    }
+  };
+
   if (!game) return null;
 
   return (
-    <Dialog open={!!game} onOpenChange={() => phase === 'complete' && onClose()}>
+    <Dialog open={!!game} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogTitle className="sr-only">Downloading {game.title}</DialogTitle>
         

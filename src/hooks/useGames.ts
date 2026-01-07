@@ -38,6 +38,7 @@ export function useFeaturedGames() {
         .from('games')
         .select('*')
         .eq('is_featured', true)
+        .order('carousel_order', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(5);
 

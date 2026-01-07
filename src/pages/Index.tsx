@@ -5,6 +5,7 @@ import { GameGrid } from '@/components/GameGrid';
 import { SearchBar } from '@/components/SearchBar';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { EarnMoneySection } from '@/components/EarnMoneySection';
+import { ContentRewardsSection } from '@/components/ContentRewardsSection';
 import { useGames, useCategories } from '@/hooks/useGames';
 
 export default function Index() {
@@ -55,6 +56,9 @@ export default function Index() {
 
         {/* Earn Money Section */}
         <EarnMoneySection />
+
+        {/* Content Rewards Section */}
+        <ContentRewardsSection />
       </main>
 
       <Footer />
