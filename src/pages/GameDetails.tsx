@@ -123,9 +123,9 @@ export default function GameDetails() {
 
             {/* Game Info */}
             <div className="flex flex-col justify-center">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4">{game.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4">{game.title}</h1>
               
-              <p className="text-muted-foreground text-lg mb-6">
+              <p className="text-muted-foreground text-lg mb-6 font-rajdhani">
                 {game.description || 'No description available for this game.'}
               </p>
 

@@ -28,11 +28,11 @@ export default function Index() {
           
           <div className="container relative">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
+              <h1 className="font-orbitron text-4xl md:text-6xl font-bold mb-4 tracking-tight">
                 Your Ultimate
                 <span className="text-primary neon-text"> Game Vault</span>
               </h1>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="text-lg text-muted-foreground mb-8 font-rajdhani">
                 Discover and download the latest games. Fast, secure, and always free.
               </p>
               <SearchBar
@@ -50,7 +50,7 @@ export default function Index() {
         {showFeatured && (
           <section className="py-12 border-y border-border/50 bg-secondary/20">
             <div className="container">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <h2 className="font-orbitron text-2xl font-bold mb-6 flex items-center gap-2">
                 <Sparkles className="w-6 h-6 text-warning" />
                 Featured Games
               </h2>
@@ -62,7 +62,7 @@ export default function Index() {
         {/* All Games */}
         <section className="py-12">
           <div className="container">
-            <h2 className="text-2xl font-bold mb-6">
+            <h2 className="font-orbitron text-2xl font-bold mb-6">
               {searchQuery || category !== 'all' ? 'Search Results' : 'Latest Uploads'}
             </h2>
             <GameGrid
