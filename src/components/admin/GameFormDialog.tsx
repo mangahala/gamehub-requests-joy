@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Upload, Loader2, Link as LinkIcon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Upload, Loader2, Link as LinkIcon, ImagePlus, X } from 'lucide-react';
 import { z } from 'zod';
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { useCreateGame, useUpdateGame, type Game } from '@/hooks/useGames';
+import { useImageUpload } from '@/hooks/useImageUpload';
 
 const gameSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -34,6 +35,8 @@ export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps
   const { toast } = useToast();
   const createGame = useCreateGame();
   const updateGame = useUpdateGame();
+  const { uploadImage, isUploading, error: uploadError } = useImageUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -63,6 +66,24 @@ export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps
     }
     setErrors({});
   }, [game, open]);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const result = await uploadImage(file);
+    if (result) {
+      setImageUrl(result.url);
+      toast({ title: 'Image uploaded successfully' });
+    } else if (uploadError) {
+      toast({ title: 'Upload failed', description: uploadError, variant: 'destructive' });
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +140,7 @@ export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit Game' : 'Add New Game'}</DialogTitle>
         </DialogHeader>
@@ -176,27 +197,64 @@ export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image-url">Image URL (ImgBB)</Label>
+            <Label>Game Image</Label>
+            
+            {/* Image Upload Button */}
+            <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="gap-2"
+              >
+                {isUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ImagePlus className="w-4 h-4" />
+                )}
+                {isUploading ? 'Uploading...' : 'Upload Image'}
+              </Button>
+              <span className="text-sm text-muted-foreground self-center">or</span>
+            </div>
+
+            {/* Manual URL Input */}
             <div className="relative">
               <Upload className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 id="image-url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://i.ibb.co/..."
+                placeholder="Paste image URL..."
                 className={`pl-10 ${errors.imgbb_image_url ? 'border-destructive' : ''}`}
               />
+              {imageUrl && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                  onClick={() => setImageUrl('')}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
             </div>
             {errors.imgbb_image_url && (
               <p className="text-sm text-destructive">{errors.imgbb_image_url}</p>
             )}
-            <p className="text-xs text-muted-foreground">
-              Upload your image to ImgBB and paste the direct link here
-            </p>
           </div>
 
+          {/* Image Preview */}
           {imageUrl && (
-            <div className="rounded-lg overflow-hidden border">
+            <div className="rounded-lg overflow-hidden border relative">
               <img
                 src={imageUrl}
                 alt="Preview"
@@ -226,7 +284,7 @@ export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps
             >
               Cancel
             </Button>
-            <Button type="submit" className="flex-1" disabled={isPending}>
+            <Button type="submit" className="flex-1" disabled={isPending || isUploading}>
               {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {isEditing ? 'Save Changes' : 'Add Game'}
             </Button>
