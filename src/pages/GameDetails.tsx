@@ -1,21 +1,20 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Star, Calendar, Loader2, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Download, Star, Calendar, Loader2 } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScreenshotCarousel } from '@/components/ScreenshotCarousel';
+import { DownloadModal } from '@/components/DownloadModal';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useIncrementDownload } from '@/hooks/useGames';
 import { useGameScreenshots } from '@/hooks/useGameScreenshots';
 import type { Game } from '@/hooks/useGames';
 
 export default function GameDetails() {
   const { id } = useParams<{ id: string }>();
-  const incrementDownload = useIncrementDownload();
-  const [downloadState, setDownloadState] = useState<'idle' | 'downloading' | 'complete'>('idle');
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const { data: game, isLoading } = useQuery({
     queryKey: ['game', id],
@@ -32,25 +31,6 @@ export default function GameDetails() {
   });
 
   const { data: screenshots = [] } = useGameScreenshots(id);
-
-  const handleDownload = async () => {
-    if (!game || downloadState !== 'idle') return;
-    
-    setDownloadState('downloading');
-    
-    await incrementDownload.mutateAsync(game.id);
-    
-    // Simulate download animation
-    setTimeout(() => {
-      setDownloadState('complete');
-      window.open(game.download_link, '_blank');
-      
-      // Reset after animation
-      setTimeout(() => {
-        setDownloadState('idle');
-      }, 2000);
-    }, 1500);
-  };
 
   if (isLoading) {
     return (
@@ -143,43 +123,14 @@ export default function GameDetails() {
                 </div>
               </div>
 
-              {/* Download Button with Animation */}
+              {/* Download Button */}
               <Button
                 size="lg"
-                onClick={handleDownload}
-                disabled={downloadState !== 'idle'}
-                className={`
-                  relative overflow-hidden w-full sm:w-auto min-w-[200px] h-14 text-lg font-semibold
-                  transition-all duration-300
-                  ${downloadState === 'complete' ? 'bg-green-600 hover:bg-green-600' : 'neon-glow'}
-                `}
+                onClick={() => setShowDownloadModal(true)}
+                className="neon-glow w-full sm:w-auto min-w-[200px] h-14 text-lg font-semibold"
               >
-                {/* Background animation */}
-                {downloadState === 'downloading' && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary animate-pulse" />
-                )}
-                
-                {/* Content */}
-                <span className="relative flex items-center gap-2">
-                  {downloadState === 'idle' && (
-                    <>
-                      <Download className="w-5 h-5" />
-                      Download Now
-                    </>
-                  )}
-                  {downloadState === 'downloading' && (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Preparing Download...
-                    </>
-                  )}
-                  {downloadState === 'complete' && (
-                    <>
-                      <CheckCircle className="w-5 h-5" />
-                      Download Started!
-                    </>
-                  )}
-                </span>
+                <Download className="w-5 h-5 mr-2" />
+                Download Now
               </Button>
             </div>
           </div>
@@ -187,6 +138,12 @@ export default function GameDetails() {
       </main>
 
       <Footer />
+
+      {/* Download Modal */}
+      <DownloadModal 
+        game={showDownloadModal ? game : null} 
+        onClose={() => setShowDownloadModal(false)} 
+      />
     </div>
   );
 }
