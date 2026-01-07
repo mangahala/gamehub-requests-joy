@@ -75,6 +75,7 @@ export type Database = {
       }
       games: {
         Row: {
+          carousel_order: number | null
           category: string | null
           created_at: string
           description: string | null
@@ -87,6 +88,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          carousel_order?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
@@ -99,6 +101,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          carousel_order?: number | null
           category?: string | null
           created_at?: string
           description?: string | null
