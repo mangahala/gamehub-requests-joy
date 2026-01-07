@@ -41,6 +41,38 @@ export type Database = {
         }
         Relationships: []
       }
+      game_screenshots: {
+        Row: {
+          created_at: string
+          display_order: number
+          game_id: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          game_id: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          game_id?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_screenshots_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       games: {
         Row: {
           category: string | null
