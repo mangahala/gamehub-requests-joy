@@ -8,8 +8,10 @@ import Index from "./pages/Index";
 import Games from "./pages/Games";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import Dashboard from "./pages/Dashboard";
 import GameDetails from "./pages/GameDetails";
 import NotFound from "./pages/NotFound";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,6 +26,7 @@ const App = () => (
             <Route path="/games" element={<Games />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/game/:id" element={<GameDetails />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

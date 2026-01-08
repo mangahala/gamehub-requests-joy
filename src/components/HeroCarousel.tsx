@@ -45,7 +45,7 @@ export function HeroCarousel() {
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
         {/* Background Image */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-background">
           {featuredGames.map((game, index) => (
             <div
               key={game.id}
@@ -53,11 +53,16 @@ export function HeroCarousel() {
                 index === currentIndex ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <img
-                src={game.imgbb_image_url || '/placeholder.svg'}
-                alt={game.title}
-                className="w-full h-full object-cover"
-              />
+              {game.imgbb_image_url ? (
+                <img
+                  src={game.imgbb_image_url}
+                  alt={game.title}
+                  className="w-full h-full object-cover"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary" />
+              )}
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
