@@ -6,6 +6,8 @@ import { SearchBar } from '@/components/SearchBar';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { EarnMoneySection } from '@/components/EarnMoneySection';
 import { ContentRewardsSection } from '@/components/ContentRewardsSection';
+import { Leaderboard } from '@/components/Leaderboard';
+import { GlobalChat } from '@/components/GlobalChat';
 import { useGames, useCategories } from '@/hooks/useGames';
 
 export default function Index() {
@@ -54,6 +56,9 @@ export default function Index() {
           </div>
         </section>
 
+        {/* Leaderboard */}
+        <Leaderboard />
+
         {/* Earn Money Section */}
         <EarnMoneySection />
 
@@ -62,6 +67,9 @@ export default function Index() {
       </main>
 
       <Footer />
+
+      {/* Global Chat */}
+      <GlobalChat />
     </div>
   );
 }

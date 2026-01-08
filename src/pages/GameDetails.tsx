@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScreenshotCarousel } from '@/components/ScreenshotCarousel';
 import { DownloadModal } from '@/components/DownloadModal';
+import { GameRating } from '@/components/GameRating';
+import { GlobalChat } from '@/components/GlobalChat';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useGameScreenshots } from '@/hooks/useGameScreenshots';
@@ -106,6 +108,11 @@ export default function GameDetails() {
             <div className="flex flex-col justify-center">
               <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4">{game.title}</h1>
               
+              {/* Game Rating */}
+              <div className="mb-4">
+                <GameRating gameId={game.id} />
+              </div>
+              
               <p className="text-muted-foreground text-lg mb-6 font-rajdhani">
                 {game.description || 'No description available for this game.'}
               </p>
@@ -138,6 +145,9 @@ export default function GameDetails() {
       </main>
 
       <Footer />
+
+      {/* Global Chat */}
+      <GlobalChat />
 
       {/* Download Modal */}
       <DownloadModal 

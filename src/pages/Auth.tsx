@@ -1,14 +1,16 @@
-import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
-import { Gamepad2, Mail, Lock, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate, Navigate, useSearchParams } from 'react-router-dom';
+import { Gamepad2, Mail, Lock, Loader2, Gift } from 'lucide-react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const authSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -17,13 +19,22 @@ const authSchema = z.object({
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get('ref');
   const { toast } = useToast();
-  const { user, isLoading: authLoading, signIn, signUp } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState(referralCode ? 'signup' : 'signin');
+
+  useEffect(() => {
+    if (referralCode) {
+      setActiveTab('signup');
+    }
+  }, [referralCode]);
 
   if (authLoading) {
     return (
@@ -34,7 +45,7 @@ export default function Auth() {
   }
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const validateForm = () => {
@@ -58,7 +69,7 @@ export default function Auth() {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setIsLoading(false);
 
     if (error) {
@@ -69,7 +80,7 @@ export default function Auth() {
       });
     } else {
       toast({ title: 'Welcome back!' });
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 
@@ -78,7 +89,14 @@ export default function Auth() {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    const { error } = await signUp(email, password);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+        data: referralCode ? { referral_code: referralCode } : undefined,
+      },
+    });
     setIsLoading(false);
 
     if (error) {
@@ -90,8 +108,11 @@ export default function Auth() {
     } else {
       toast({
         title: 'Account created!',
-        description: 'You can now sign in with your credentials.',
+        description: referralCode 
+          ? 'You got 3 days of premium access!' 
+          : 'You can now sign in with your credentials.',
       });
+      navigate('/dashboard');
     }
   };
 
@@ -105,10 +126,26 @@ export default function Auth() {
           <CardTitle className="text-2xl">
             Game<span className="text-primary">Vault</span>
           </CardTitle>
-          <CardDescription>Sign in to access admin features</CardDescription>
+          <CardDescription>Sign in to access your dashboard</CardDescription>
+          
+          {/* Referral Bonus Banner */}
+          {referralCode && (
+            <div className="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+              <div className="flex items-center justify-center gap-2 text-green-400">
+                <Gift className="w-5 h-5" />
+                <span className="font-semibold">You've been referred!</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Sign up now to get 3 days of premium access FREE!
+              </p>
+              <Badge className="mt-2 bg-green-500/20 text-green-400 border-green-500/30">
+                3 Days Premium
+              </Badge>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
