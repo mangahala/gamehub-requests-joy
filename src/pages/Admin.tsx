@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Gamepad2, MessageSquare, BarChart3, Plus } from 'lucide-react';
+import { Gamepad2, MessageSquare, BarChart3, Plus, Gift } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
@@ -7,6 +7,7 @@ import { AdminLayout } from '@/components/AdminLayout';
 import { AdminGamesTab } from '@/components/admin/AdminGamesTab';
 import { AdminRequestsTab } from '@/components/admin/AdminRequestsTab';
 import { AdminStatsTab } from '@/components/admin/AdminStatsTab';
+import { AdminRewardsTab } from '@/components/admin/AdminRewardsTab';
 import { GameFormDialog } from '@/components/admin/GameFormDialog';
 
 export default function Admin() {
@@ -39,6 +40,10 @@ export default function Admin() {
                 <MessageSquare className="w-4 h-4" />
                 Requests
               </TabsTrigger>
+              <TabsTrigger value="rewards" className="gap-2">
+                <Gift className="w-4 h-4" />
+                Rewards
+              </TabsTrigger>
               <TabsTrigger value="stats" className="gap-2">
                 <BarChart3 className="w-4 h-4" />
                 Stats
@@ -51,6 +56,10 @@ export default function Admin() {
 
             <TabsContent value="requests">
               <AdminRequestsTab />
+            </TabsContent>
+
+            <TabsContent value="rewards">
+              <AdminRewardsTab />
             </TabsContent>
 
             <TabsContent value="stats">

@@ -8,6 +8,8 @@ import { EarnMoneySection } from '@/components/EarnMoneySection';
 import { ContentRewardsSection } from '@/components/ContentRewardsSection';
 import { Leaderboard } from '@/components/Leaderboard';
 import { GlobalChat } from '@/components/GlobalChat';
+import { RewardsShop } from '@/components/RewardsShop';
+import { SnowEffect } from '@/components/SnowEffect';
 import { useGames, useCategories } from '@/hooks/useGames';
 
 export default function Index() {
@@ -19,6 +21,9 @@ export default function Index() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Winter Snow Effect */}
+      <SnowEffect />
+      
       <Header />
       
       <main className="flex-1">
@@ -55,6 +60,9 @@ export default function Index() {
             />
           </div>
         </section>
+
+        {/* Rewards Shop */}
+        <RewardsShop />
 
         {/* Leaderboard */}
         <Leaderboard />
