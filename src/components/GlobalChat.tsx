@@ -34,24 +34,35 @@ export function GlobalChat() {
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['chat-messages'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get chat messages
+      const { data: chatData, error: chatError } = await supabase
         .from('chat_messages')
-        .select(`
-          id,
-          user_id,
-          content,
-          image_url,
-          created_at,
-          profiles!chat_messages_user_id_fkey (
-            display_name,
-            avatar_url
-          )
-        `)
+        .select('id, user_id, content, image_url, created_at')
         .order('created_at', { ascending: true })
         .limit(100);
       
-      if (error) throw error;
-      return data as unknown as ChatMessage[];
+      if (chatError) throw chatError;
+      if (!chatData || chatData.length === 0) return [];
+
+      // Get unique user IDs
+      const userIds = [...new Set(chatData.map(m => m.user_id))];
+      
+      // Fetch profiles for those users
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url')
+        .in('user_id', userIds);
+
+      // Create a map of user_id to profile
+      const profilesMap = new Map(
+        (profilesData || []).map(p => [p.user_id, p])
+      );
+
+      // Combine messages with profiles
+      return chatData.map(msg => ({
+        ...msg,
+        profiles: profilesMap.get(msg.user_id) || null,
+      })) as ChatMessage[];
     },
     enabled: isOpen,
   });

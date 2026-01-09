@@ -10,6 +10,7 @@ import { Leaderboard } from '@/components/Leaderboard';
 import { GlobalChat } from '@/components/GlobalChat';
 import { RewardsShop } from '@/components/RewardsShop';
 import { SnowEffect } from '@/components/SnowEffect';
+import { NewYearBanner } from '@/components/NewYearBanner';
 import { useGames, useCategories } from '@/hooks/useGames';
 
 export default function Index() {
@@ -25,6 +26,9 @@ export default function Index() {
       <SnowEffect />
       
       <Header />
+      
+      {/* New Year Banner */}
+      <NewYearBanner />
       
       <main className="flex-1">
         {/* Hero Carousel */}
