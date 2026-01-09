@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Gamepad2, Shield, LogOut, Images } from 'lucide-react';
+import { Gamepad2, Shield, LogOut, Images, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GameRequestModal } from './GameRequestModal';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import { useAuth } from '@/hooks/useAuth';
 
 export function Header() {
@@ -30,6 +31,15 @@ export function Header() {
           
           <GameRequestModal />
           
+          {user && (
+            <Button asChild variant="ghost" className="gap-2">
+              <Link to="/dashboard">
+                <LayoutDashboard className="w-4 h-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Link>
+            </Button>
+          )}
+          
           {isAdmin && !isAdminRoute && (
             <Button asChild variant="ghost" className="gap-2">
               <Link to="/admin">
@@ -44,6 +54,8 @@ export function Header() {
               <Link to="/">Home</Link>
             </Button>
           )}
+
+          <ThemeSwitcher />
 
           {user ? (
             <Button variant="ghost" size="icon" onClick={signOut}>
