@@ -204,6 +204,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          is_banned: boolean | null
           premium_until: string | null
           referral_code: string | null
           referred_by: string | null
@@ -216,6 +217,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_banned?: boolean | null
           premium_until?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -228,6 +230,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_banned?: boolean | null
           premium_until?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -244,6 +247,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rdp_credentials: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: string
+          is_active: boolean | null
+          notes: string | null
+          password: string
+          updated_at: string | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address: string
+          is_active?: boolean | null
+          notes?: string | null
+          password: string
+          updated_at?: string | null
+          user_id: string
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: string
+          is_active?: boolean | null
+          notes?: string | null
+          password?: string
+          updated_at?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
       }
       reward_redemptions: {
         Row: {

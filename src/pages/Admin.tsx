@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Gamepad2, MessageSquare, BarChart3, Plus, Gift } from 'lucide-react';
+import { Gamepad2, MessageSquare, BarChart3, Plus, Gift, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/Header';
@@ -8,6 +8,7 @@ import { AdminGamesTab } from '@/components/admin/AdminGamesTab';
 import { AdminRequestsTab } from '@/components/admin/AdminRequestsTab';
 import { AdminStatsTab } from '@/components/admin/AdminStatsTab';
 import { AdminRewardsTab } from '@/components/admin/AdminRewardsTab';
+import { AdminUsersTab } from '@/components/admin/AdminUsersTab';
 import { GameFormDialog } from '@/components/admin/GameFormDialog';
 
 export default function Admin() {
@@ -31,22 +32,26 @@ export default function Admin() {
           </div>
 
           <Tabs defaultValue="games" className="space-y-6">
-            <TabsList>
+            <TabsList className="flex-wrap h-auto gap-1">
               <TabsTrigger value="games" className="gap-2">
                 <Gamepad2 className="w-4 h-4" />
-                Games
+                <span className="hidden sm:inline">Games</span>
               </TabsTrigger>
               <TabsTrigger value="requests" className="gap-2">
                 <MessageSquare className="w-4 h-4" />
-                Requests
+                <span className="hidden sm:inline">Requests</span>
               </TabsTrigger>
               <TabsTrigger value="rewards" className="gap-2">
                 <Gift className="w-4 h-4" />
-                Rewards
+                <span className="hidden sm:inline">Rewards</span>
+              </TabsTrigger>
+              <TabsTrigger value="users" className="gap-2">
+                <Users className="w-4 h-4" />
+                <span className="hidden sm:inline">Users</span>
               </TabsTrigger>
               <TabsTrigger value="stats" className="gap-2">
                 <BarChart3 className="w-4 h-4" />
-                Stats
+                <span className="hidden sm:inline">Stats</span>
               </TabsTrigger>
             </TabsList>
 
@@ -60,6 +65,10 @@ export default function Admin() {
 
             <TabsContent value="rewards">
               <AdminRewardsTab />
+            </TabsContent>
+
+            <TabsContent value="users">
+              <AdminUsersTab />
             </TabsContent>
 
             <TabsContent value="stats">

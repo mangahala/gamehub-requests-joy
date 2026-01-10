@@ -6,6 +6,8 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { DashboardRedemptions } from '@/components/DashboardRedemptions';
+import { DashboardRDP } from '@/components/DashboardRDP';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -17,6 +19,7 @@ interface Profile {
   referral_code: string;
   premium_until: string | null;
   total_earnings: number;
+  is_banned: boolean;
 }
 
 interface LeaderboardEntry {
@@ -60,14 +63,41 @@ export default function Dashboard() {
 
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground font-rajdhani">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
 
   if (!user) {
     return <Navigate to="/auth" />;
+  }
+
+  // Check if user is banned
+  if (profile?.is_banned) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 container py-8 flex items-center justify-center">
+          <Card className="max-w-md text-center">
+            <CardContent className="py-12">
+              <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-6">
+                <span className="text-3xl">🚫</span>
+              </div>
+              <h2 className="text-2xl font-orbitron font-bold mb-4 text-destructive">Account Suspended</h2>
+              <p className="text-muted-foreground font-rajdhani">
+                Your account has been suspended. If you believe this is a mistake, 
+                please contact support.
+              </p>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   const referralUrl = `${window.location.origin}/auth?ref=${profile?.referral_code}`;
@@ -87,36 +117,36 @@ export default function Dashboard() {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 container py-8">
+      <main className="flex-1 container py-4 md:py-8 px-4">
         {/* Back Button */}
         <Link to="/">
-          <Button variant="ghost" size="sm" className="mb-6">
+          <Button variant="ghost" size="sm" className="mb-4 md:mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Button>
         </Link>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-orbitron font-bold mb-2">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-orbitron font-bold mb-2 neon-text">
             Welcome, {profile?.display_name || user.email?.split('@')[0]}!
           </h1>
-          <p className="text-muted-foreground font-rajdhani">
+          <p className="text-muted-foreground font-rajdhani text-sm md:text-base">
             Manage your referrals and track your earnings
           </p>
         </div>
 
         {/* Premium Status */}
         {isPremium && (
-          <Card className="mb-6 bg-gradient-to-r from-primary/20 to-purple-500/20 border-primary/30">
-            <CardContent className="flex items-center gap-4 py-4">
+          <Card className="mb-6 card-3d bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/30">
+            <CardContent className="flex flex-col sm:flex-row items-center gap-4 py-4">
               <Crown className="w-8 h-8 text-yellow-400" />
-              <div>
+              <div className="text-center sm:text-left">
                 <p className="font-orbitron font-bold text-lg">Premium Active</p>
                 <p className="text-sm text-muted-foreground font-rajdhani">
-                  {premiumDaysLeft} days remaining - Priority game requests enabled!
+                  {premiumDaysLeft} days remaining - Priority game requests & RDP access enabled!
                 </p>
               </div>
-              <Badge className="ml-auto bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+              <Badge className="sm:ml-auto bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
                 PREMIUM
               </Badge>
             </CardContent>
@@ -124,8 +154,8 @@ export default function Dashboard() {
         )}
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+          <Card className="card-3d hover:scale-[1.02] transition-transform">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Users className="w-4 h-4" />
@@ -133,11 +163,11 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-orbitron font-bold">{stats?.referral_count || 0}</p>
+              <p className="text-2xl md:text-3xl font-orbitron font-bold">{stats?.referral_count || 0}</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-3d hover:scale-[1.02] transition-transform">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
@@ -145,13 +175,13 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-orbitron font-bold text-green-400">
+              <p className="text-2xl md:text-3xl font-orbitron font-bold text-green-400">
                 ${Number(stats?.total_earnings || 0).toFixed(2)}
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="card-3d hover:scale-[1.02] transition-transform">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Gift className="w-4 h-4" />
@@ -159,15 +189,15 @@ export default function Dashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-orbitron font-bold">$0.50</p>
+              <p className="text-2xl md:text-3xl font-orbitron font-bold">$0.50</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Referral Link */}
-        <Card className="mb-8">
+        <Card className="mb-6 md:mb-8 card-3d">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-orbitron">
+            <CardTitle className="flex items-center gap-2 font-orbitron text-lg md:text-xl">
               <Share2 className="w-5 h-5 text-primary" />
               Your Referral Link
             </CardTitle>
@@ -176,11 +206,11 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-2">
-              <div className="flex-1 bg-secondary/50 rounded-lg px-4 py-3 font-mono text-sm break-all">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1 bg-secondary/50 rounded-lg px-4 py-3 font-mono text-xs md:text-sm break-all border border-border/50">
                 {referralUrl}
               </div>
-              <Button onClick={copyReferralLink} className="gap-2">
+              <Button onClick={copyReferralLink} className="gap-2 neon-glow">
                 <Copy className="w-4 h-4" />
                 {copied ? 'Copied!' : 'Copy'}
               </Button>
@@ -188,15 +218,25 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
+        {/* RDP Access Section */}
+        <div className="mb-6 md:mb-8">
+          <DashboardRDP />
+        </div>
+
+        {/* Redemptions Section */}
+        <div className="mb-6 md:mb-8">
+          <DashboardRedemptions />
+        </div>
+
         {/* How It Works */}
-        <Card>
+        <Card className="card-3d">
           <CardHeader>
             <CardTitle className="font-orbitron">How to Earn More</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center p-4">
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div className="text-center p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3 neon-glow">
                   <span className="text-xl font-bold text-primary">1</span>
                 </div>
                 <h3 className="font-semibold mb-2">Share Your Link</h3>
@@ -205,8 +245,8 @@ export default function Dashboard() {
                 </p>
               </div>
               
-              <div className="text-center p-4">
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+              <div className="text-center p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3 neon-glow">
                   <span className="text-xl font-bold text-primary">2</span>
                 </div>
                 <h3 className="font-semibold mb-2">Friends Sign Up</h3>
@@ -215,8 +255,8 @@ export default function Dashboard() {
                 </p>
               </div>
               
-              <div className="text-center p-4">
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+              <div className="text-center p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3 neon-glow">
                   <span className="text-xl font-bold text-primary">3</span>
                 </div>
                 <h3 className="font-semibold mb-2">Earn Rewards</h3>
